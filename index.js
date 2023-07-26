@@ -29,6 +29,13 @@ app.post("/send",async(req,res)=>{
     res.send(data);
 });
 
+app.post("/delete", async (req, res) => {
+  const taskId = req.body._id; 
+
+    const data = await Task.deleteOne({ _id: taskId });
+
+    res.send(data);
+});
 
 app.get('/all', async (req, res) => {
   const data = await Task.find();
