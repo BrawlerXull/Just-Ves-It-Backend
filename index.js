@@ -42,4 +42,9 @@ app.get('/all', async (req, res) => {
   res.send(data); 
 });
 
-app.listen(5002,()=>console.log('listening on port 5002'));
+const server = app.listen(process.env.PORT || 5002, () => {
+  console.log(`Server listening on port ${server.address().port}`);
+});
+
+const startWebSocketServer = require('./src/websocket/websocket'); // Require the WebSocket server
+startWebSocketServer(server);
