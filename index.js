@@ -5,6 +5,10 @@ const Task = require("./src/schema/schema");
 const users = require('./src/Registered Users/users.js');
 app.use(express.json());
 
+const cors = require('cors');
+
+app.use(cors());
+
 app.get('/', (req, res) => {
   res.send('hello world!');
 });
