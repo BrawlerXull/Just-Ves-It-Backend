@@ -5,6 +5,7 @@ function startWebSocketServer(server) {
 
   io.on('connection', (socket) => {
     console.log('WebSocket connection established.');
+    io.emit('message', "hello");
 
     socket.on('message', (message) => {
       console.log('Received message:', message);
