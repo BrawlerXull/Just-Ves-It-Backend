@@ -1,21 +1,24 @@
-const socketIO = require('socket.io');
 
-function startWebSocketServer(server) {
-  const io = socketIO(server);
+module.exports = function createWebSocketServer(httpServer) {
+  const WebSocket = require('ws');
+  const websocketServer = new WebSocket.Server({ server: httpServer });
 
-  io.on('connection', (socket) => {
-    console.log('WebSocket connection established.');
-    io.emit('message', "hello");
+  websocketServer.on('connection', (ws) => {
+    console.log('WebSocket client connected');
 
-    socket.on('message', (message) => {
-      console.log('Received message:', message);
-      io.emit('message', message);
+    ws.on('message', (message) => {
+      console.log(`Received message: ${message}`);
+      websocketServer.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
     });
 
-    socket.on('disconnect', () => {
-      console.log('WebSocket connection closed.');
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
     });
   });
-}
 
-module.exports = startWebSocketServer;
+  return websocketServer;
+};

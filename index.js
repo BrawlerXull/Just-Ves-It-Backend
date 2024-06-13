@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const app = express();
 require("./src/db/mongodb");
 const Task = require("./src/schema/schema");
@@ -6,7 +7,6 @@ const users = require('./src/Registered Users/users.js');
 app.use(express.json());
 
 const cors = require('cors');
-
 app.use(cors());
 
 app.get('/', (req, res) => {
@@ -23,7 +23,6 @@ app.post('/auth', (req, res) => {
     res.send({"resp" : isValuePresent});
 });
 
-
 app.post("/send",async(req,res)=>{
   const data = await Task.insertMany({
     description:req.body.description,
@@ -35,9 +34,7 @@ app.post("/send",async(req,res)=>{
 
 app.post("/delete", async (req, res) => {
   const taskId = req.body._id; 
-
     const data = await Task.deleteOne({ _id: taskId });
-
     res.send(data);
 });
 
@@ -46,9 +43,12 @@ app.get('/all', async (req, res) => {
   res.send(data); 
 });
 
-const server = app.listen(process.env.PORT || 5002, () => {
-  console.log(`Server listening on port ${server.address().port}`);
-});
+const httpServer = http.createServer(app);
+const createWebSocketServer = require('./src/websocket/websocket');
 
-const startWebSocketServer = require('./src/websocket/websocket'); // Require the WebSocket server
-startWebSocketServer(server);
+const websocketServer = createWebSocketServer(httpServer);
+
+const PORT = process.env.PORT || 5002;
+httpServer.listen(PORT, () => {
+  console.log(`HTTP Server listening on port ${PORT}`);
+});
